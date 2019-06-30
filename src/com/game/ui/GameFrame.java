@@ -433,110 +433,69 @@ public class GameFrame extends KFrame
 	public void mouseClicked(MouseEvent e)
 	{
 		// 判断来源
-		if (e.getButton() == e.BUTTON1)
+		if (e.getButton() == MouseEvent.BUTTON1)
 		{
+			// 左击下棋
+			// 获取鼠标点击位置
 			int x = e.getX();
 			int y = e.getY();
-			x = (x - x % w) + (x % w > w / 2 ? w : 0);
-			y = (y - y % w) + (y % w > w / 2 ? w : 0);
+			// 计算精确位置
+			x = (x - x % w) + ((x % w) > (w / 2) ? w : 0);
+			y = (y - y % w) + ((y % w > (w / 2) ? w : 0));
+
 			x = (x - px) / w;
 			y = (y - py) / w;
 
-			if (x >= 0 && y >= 0 && x <= 16 && y <= 16)
+			// 判断棋子是否出界
+			if ((x >= 0) && (y >= 0) && (x <= 16) && (y <= 16))
 			{
+				// 没有出界
+				// 判断该位置是否已经有棋子
 				if (v.contains(x + "-" + y))
 				{
-					if (isSound == true)
+					// 该位置已经有棋
+					if (isSound)
 					{
 						new PlaySoundThread("warning.wav").start();
 					}
-					// JOptionPane.showMessageDialog(this, "该位置已经有棋了！");
-					// System.out.println("已经有棋了！");
+
 				} else
 				{
-
-					if (isSound == true)
+					// 该位置可下
+					if (isSound)
 					{
 						new PlaySoundThread("merge.wav").start();
 					}
+
+					// 添加走棋信息(棋子位置信息)
 					v.add(x + "-" + y);
+					// 重绘
 					this.repaint();
+
+					// 判断黑白棋
 					if (v.size() % 2 == 0)
 					{
 						black.add(x + "-" + y);
 						checkVictory(x, y, black);
-						// System.out.println("黑棋");
 					} else
 					{
 						white.add(x + "-" + y);
 						checkVictory(x, y, white);
-						// System.out.println("白棋");
 					}
-					// System.out.println(e.getX()+"-"+e.getY());
-				}
-			} else
-			{
-				if (isSound == true)
-				{
-					new PlaySoundThread("warning.wav").start();
-				}
-				// System.out.println(e.getX()+"-"+e.getY()+"|"+x+"-"+y+"\t超出边界了");
-			}
-		}
 
-		if (e.getButton() == e.BUTTON3)
-		{
-			// 右击悔棋的方法
-			// System.out.println("鼠标右击--悔棋");
-			if (v.isEmpty())
+				}
+			} else
 			{
-				if (isSound == true)
+				// 鼠标点击位置出界
+				if (isSound)
 				{
 					new PlaySoundThread("warning.wav").start();
 				}
-				JOptionPane.showMessageDialog(this, "没有棋可悔");
-			} else
-			{
-				if (v.size() % 2 == 0)
-				{ // 判断是白棋悔棋，还是黑棋悔棋
-					blackCount++;
-					if (blackCount > 3)
-					{
-						if (isSound == true)
-						{
-							new PlaySoundThread("warning.wav").start();
-						}
-						JOptionPane.showMessageDialog(this, "黑棋已经悔了3步");
-					} else
-					{
-						if (isSound == true)
-						{
-							new PlaySoundThread("move.wav").start();
-						}
-						v.remove(v.lastElement());
-						this.repaint();
-					}
-				} else
-				{
-					whiteCount++;
-					if (whiteCount > 3)
-					{
-						if (isSound == true)
-						{
-							new PlaySoundThread("warning.wav").start();
-						}
-						JOptionPane.showMessageDialog(this, "白棋已经悔了3步");
-					} else
-					{
-						if (isSound == true)
-						{
-							new PlaySoundThread("move.wav").start();
-						}
-						v.remove(v.lastElement());
-						this.repaint();
-					}
-				}
 			}
+		} else if (e.getButton() == MouseEvent.BUTTON3)
+		{
+			// 右击悔棋
+			back();
 		}
 	}
 
