@@ -2,6 +2,8 @@ package com.game.ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.JFrame;
 
@@ -11,13 +13,43 @@ import javax.swing.JFrame;
  * @author ordinary-student
  *
  */
-public class KFrame extends JFrame implements ActionListener
+public class KFrame extends JFrame implements ActionListener, MouseListener
 {
 	private static final long serialVersionUID = 8572711900621465546L;
 
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e)
+	{
+
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e)
+	{
+
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e)
+	{
+
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e)
+	{
+
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e)
+	{
+
 	}
 
 }
