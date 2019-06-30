@@ -39,21 +39,31 @@ public class GameFrame extends KFrame
 
 	// 计算悔棋步数
 	private int whiteBackStepCount, blackBackStepCount;
+
 	// 每个格子的边长
 	private final static int GRID_WIDTH = 25;
 	// 格子数量
 	private final static int GRID_NUM = 16;
-	// 棋盘的大小
-	private int px = 100, py = 100;
 
-	private int pxw = px + GRID_WIDTH, pyw = py + GRID_WIDTH;
-	private int width = GRID_WIDTH * GRID_NUM, height = GRID_WIDTH * GRID_NUM;
+	// 棋盘位置的起点坐标
+	private final static int CHECKERBOARD_POS_X = 100;
+	private final static int CHECKERBOARD_POS_Y = 100;
+	// 棋盘的长宽
+	private final static int CHECKERBOARD_WIDTH = GRID_WIDTH * GRID_NUM;
+	private final static int CHECKERBOARD_HEIGHT = GRID_WIDTH * GRID_NUM;
+
+	// 画竖线的起始横坐标
+	private final static int VLINE_POS_X = CHECKERBOARD_POS_X + GRID_WIDTH;
+	// 画横线的起始纵坐标
+	private final static int HLINE_POS_Y = CHECKERBOARD_POS_Y + GRID_WIDTH;
+
 	// 垂直线的长度
-	private int vline = width + px;
+	private final static int VLINE_LENGTH = CHECKERBOARD_WIDTH + CHECKERBOARD_POS_X;
 	// 水平线的长度
-	private int hline = height + py;
+	private final static int HLINE_LENGTH = CHECKERBOARD_HEIGHT + CHECKERBOARD_POS_Y;
+
 	// 音效标志
-	private boolean isSound = true;
+	private boolean soundFlag = true;
 
 	/*
 	 * 构造方法
@@ -132,8 +142,8 @@ public class GameFrame extends KFrame
 		g.clearRect(0, 0, this.getWidth(), this.getHeight());
 		// 绘制网格颜色
 		g.setColor(Color.BLACK);
-		// 绘制网格大边界
-		g.drawRect(px, py, width, height);
+		// 绘制棋盘大边界
+		g.drawRect(CHECKERBOARD_POS_X, CHECKERBOARD_POS_Y, CHECKERBOARD_WIDTH, CHECKERBOARD_HEIGHT);
 		// 画提示信息
 		g.drawString("单机版五子棋小游戏，右击可以悔棋，欢迎来玩！", 180, 70);
 		g.drawString(allChessPositionInfo.size() + "步棋", 250, 550);
@@ -141,8 +151,10 @@ public class GameFrame extends KFrame
 		// 绘制每条横线和竖线
 		for (int i = 0; i < 15; i++)
 		{
-			g.drawLine(pxw + i * GRID_WIDTH, py, pxw + i * GRID_WIDTH, hline);
-			g.drawLine(px, pyw + i * GRID_WIDTH, vline, pyw + i * GRID_WIDTH);
+			// 画竖线
+			g.drawLine(VLINE_POS_X + i * GRID_WIDTH, CHECKERBOARD_POS_Y, VLINE_POS_X + i * GRID_WIDTH, HLINE_LENGTH);
+			// 画横线
+			g.drawLine(CHECKERBOARD_POS_X, HLINE_POS_Y + i * GRID_WIDTH, VLINE_LENGTH, HLINE_POS_Y + i * GRID_WIDTH);
 		}
 
 		// 绘制棋子
@@ -154,8 +166,8 @@ public class GameFrame extends KFrame
 			int a = Integer.parseInt(tmp[0]);
 			int b = Integer.parseInt(tmp[1]);
 
-			a = a * GRID_WIDTH + px;
-			b = b * GRID_WIDTH + py;
+			a = a * GRID_WIDTH + CHECKERBOARD_POS_X;
+			b = b * GRID_WIDTH + CHECKERBOARD_POS_Y;
 
 			if (x % 2 == 0)
 			{
@@ -193,7 +205,7 @@ public class GameFrame extends KFrame
 		} else if (e.getSource() == soundItem)
 		{
 			// 音效
-			isSound = !soundItem.isSelected();
+			soundFlag = !soundItem.isSelected();
 		}
 	}
 
@@ -230,7 +242,7 @@ public class GameFrame extends KFrame
 		if (allChessPositionInfo.isEmpty())
 		{
 			// 播放音效
-			if (isSound)
+			if (soundFlag)
 			{
 				new PlaySoundThread("warning.wav").start();
 			}
@@ -248,7 +260,7 @@ public class GameFrame extends KFrame
 				// 最多悔3步棋
 				if (blackBackStepCount > 3)
 				{
-					if (isSound)
+					if (soundFlag)
 					{
 						new PlaySoundThread("warning.wav").start();
 					}
@@ -258,7 +270,7 @@ public class GameFrame extends KFrame
 				} else
 				{
 					// 悔棋
-					if (isSound)
+					if (soundFlag)
 					{
 						new PlaySoundThread("move.wav").start();
 					}
@@ -275,7 +287,7 @@ public class GameFrame extends KFrame
 				// 最多悔3步棋
 				if (whiteBackStepCount > 3)
 				{
-					if (isSound == true)
+					if (soundFlag == true)
 					{
 						new PlaySoundThread("warning.wav").start();
 					}
@@ -285,7 +297,7 @@ public class GameFrame extends KFrame
 				} else
 				{
 					// 悔棋
-					if (isSound == true)
+					if (soundFlag == true)
 					{
 						new PlaySoundThread("move.wav").start();
 					}
@@ -307,7 +319,7 @@ public class GameFrame extends KFrame
 	 * @param y
 	 * @param chessPositionInfo
 	 */
-	private void checkVictory(int x, int y, Vector chessPositionInfo)
+	private void checkVictory(int x, int y, Vector<String> chessPositionInfo)
 	{
 		// 垂直方向棋子数量
 		int verticalCount = 0;
@@ -409,7 +421,7 @@ public class GameFrame extends KFrame
 		// 判断是否赢了
 		if ((horizontalCount >= 4) || (verticalCount >= 4) || (diagonalCount >= 4) || (antiDiagonalCount >= 4))
 		{
-			if (isSound)
+			if (soundFlag)
 			{
 				new PlaySoundThread("win.wav").start();
 			}
@@ -443,8 +455,8 @@ public class GameFrame extends KFrame
 			x = (x - x % GRID_WIDTH) + ((x % GRID_WIDTH) > (GRID_WIDTH / 2) ? GRID_WIDTH : 0);
 			y = (y - y % GRID_WIDTH) + ((y % GRID_WIDTH > (GRID_WIDTH / 2) ? GRID_WIDTH : 0));
 
-			x = (x - px) / GRID_WIDTH;
-			y = (y - py) / GRID_WIDTH;
+			x = (x - CHECKERBOARD_POS_X) / GRID_WIDTH;
+			y = (y - CHECKERBOARD_POS_Y) / GRID_WIDTH;
 
 			// 判断棋子是否出界
 			if ((x >= 0) && (y >= 0) && (x <= 16) && (y <= 16))
@@ -454,7 +466,7 @@ public class GameFrame extends KFrame
 				if (allChessPositionInfo.contains(x + "-" + y))
 				{
 					// 该位置已经有棋
-					if (isSound)
+					if (soundFlag)
 					{
 						new PlaySoundThread("warning.wav").start();
 					}
@@ -462,7 +474,7 @@ public class GameFrame extends KFrame
 				} else
 				{
 					// 该位置可下
-					if (isSound)
+					if (soundFlag)
 					{
 						new PlaySoundThread("merge.wav").start();
 					}
@@ -487,7 +499,7 @@ public class GameFrame extends KFrame
 			} else
 			{
 				// 鼠标点击位置出界
-				if (isSound)
+				if (soundFlag)
 				{
 					new PlaySoundThread("warning.wav").start();
 				}
