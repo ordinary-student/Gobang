@@ -15,7 +15,7 @@ import javax.swing.JFrame;
  */
 public class KFrame extends JFrame implements ActionListener, MouseListener
 {
-	private static final long serialVersionUID = 8572711900621465546L;
+	private static final long serialVersionUID = -6165997608098263281L;
 
 	@Override
 	public void actionPerformed(ActionEvent e)
