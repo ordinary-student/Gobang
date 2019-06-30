@@ -20,7 +20,7 @@ import com.game.utils.WindowUtil;
  */
 public class GameFrame extends KFrame
 {
-	private static final long serialVersionUID = -3578214145718737571L;
+	private static final long serialVersionUID = -6201183662522133782L;
 
 	/*
 	 * 构造方法
