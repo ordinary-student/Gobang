@@ -27,7 +27,7 @@ public class GameFrame extends KFrame
 	private JMenuItem backItem;
 	private JCheckBoxMenuItem soundItem;
 
-	// 所有的每步走棋信息
+	// 所有的每一步走棋的信息
 	private Vector v = new Vector();
 	// 白方走棋信息
 	private Vector white = new Vector();
@@ -150,9 +150,8 @@ public class GameFrame extends KFrame
 
 		} else if (e.getSource() == soundItem)
 		{
-
-		} else if (e.getSource() == newGameItem)
-		{
+			// 音效
+			isSound = !soundItem.isSelected();
 		}
 	}
 
@@ -161,22 +160,23 @@ public class GameFrame extends KFrame
 	 */
 	private void newGame()
 	{
-		//
+		// 清空所有走棋信息
 		v.clear();
-		//
 		black.clear();
 		white.clear();
 		// 重绘
 		repaint();
-		//
+		// 悔棋次数清零
 		whiteCount = 0;
 		blackCount = 0;
 	}
 
+	/**
+	 * 退出游戏
+	 */
 	private void exit()
 	{
-		// TODO 自动生成的方法存根
-
+		System.exit(0);
 	}
 
 	private void back()
