@@ -1,7 +1,7 @@
 package com.game.ui;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
@@ -88,14 +88,17 @@ public class GameFrame extends KFrame
 		// 设置居中
 		WindowUtil.center(this);
 		// 设置布局
-		getContentPane().setLayout(new BorderLayout());
+		// getContentPane().setLayout(new BorderLayout());
 		// 设置背景颜色
-		setBackground(Color.orange);
+		// setBackground(Color.orange);
 		// 设置关闭方式
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		// 添加监听
+		addMouseListener(this);
 
 		// 创建菜单栏
 		JMenuBar menuBar = new JMenuBar();
+		menuBar.setFont(new Font("粗体", Font.CENTER_BASELINE, 15));
 
 		// 创建菜单
 		JMenu startMenu = new JMenu("开始");
@@ -127,7 +130,7 @@ public class GameFrame extends KFrame
 		menuBar.add(helpMenu);
 
 		// 设置菜单栏
-		setJMenuBar(menuBar);
+		this.setJMenuBar(menuBar);
 
 		validate();
 		// 显示界面
@@ -139,7 +142,7 @@ public class GameFrame extends KFrame
 	public void paint(Graphics g)
 	{
 		// 清除棋盘
-		g.clearRect(0, 0, this.getWidth(), this.getHeight());
+		g.clearRect(0, 50, this.getWidth(), this.getHeight());
 		// 绘制网格颜色
 		g.setColor(Color.BLACK);
 		// 绘制棋盘大边界
