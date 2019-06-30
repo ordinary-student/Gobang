@@ -123,11 +123,50 @@ public class GameFrame extends KFrame
 		setVisible(true);
 	}
 
-	// 重写窗体
+	// 重写棋盘
 	@Override
 	public void paint(Graphics g)
 	{
-		super.paint(g);
+		// 清除棋盘
+		g.clearRect(0, 0, this.getWidth(), this.getHeight());
+		// 绘制网格颜色
+		g.setColor(Color.BLACK);
+		// 绘制网格
+		g.drawRect(px, py, width, height);
+		// 画提示信息
+		g.drawString("单机版五子棋小游戏，右击可以悔棋，欢迎来玩！", 180, 70);
+		g.drawString(v.size() + "步棋", 250, 550);
+
+		// 绘制每条横线和竖线
+		for (int i = 0; i < 15; i++)
+		{
+			g.drawLine(pxw + i * w, py, pxw + i * w, hline);
+			g.drawLine(px, pyw + i * w, vline, pyw + i * w);
+		}
+
+		// 绘制棋子
+		for (int x = 0; x < v.size(); x++)
+		{
+			String str = (String) v.get(x);
+			String tmp[] = str.split("-");
+
+			int a = Integer.parseInt(tmp[0]);
+			int b = Integer.parseInt(tmp[1]);
+
+			a = a * w + px;
+			b = b * w + py;
+
+			if (x % 2 == 0)
+			{
+				g.setColor(Color.WHITE);
+			} else
+			{
+				g.setColor(Color.BLACK);
+			}
+
+			// 绘制棋子
+			g.fillArc(a - w / 2, b - w / 2, w, w, 0, 360);
+		}
 
 	}
 
@@ -181,53 +220,78 @@ public class GameFrame extends KFrame
 		System.exit(0);
 	}
 
+	/**
+	 * 悔棋
+	 */
 	private void back()
 	{
+		// 没有走棋信息
 		if (v.isEmpty())
 		{
+			// 播放音效
 			if (isSound)
 			{
 				new PlaySoundThread("warning.wav").start();
 			}
-			JOptionPane.showMessageDialog(null, "没有棋可悔");
+
+			JOptionPane.showMessageDialog(this, "没有棋可悔！");
+
 		} else
 		{
+			// 有走棋信息
+			// 判断是白棋悔棋，还是黑棋悔棋
 			if (v.size() % 2 == 0)
-			{ // 判断是白棋悔棋，还是黑棋悔棋
+			{
+				// 黑棋悔棋
 				blackCount++;
+				// 最多悔3步棋
 				if (blackCount > 3)
 				{
-					if (isSound == true)
+					if (isSound)
 					{
 						new PlaySoundThread("warning.wav").start();
 					}
-					JOptionPane.showMessageDialog(null, "黑棋已经悔了3步");
+
+					JOptionPane.showMessageDialog(this, "黑棋已经悔了3步啦！");
+
 				} else
 				{
-					if (isSound == true)
+					// 悔棋
+					if (isSound)
 					{
 						new PlaySoundThread("move.wav").start();
 					}
+
+					// 移除最后一步走棋信息
 					v.remove(v.lastElement());
+					// 重绘
 					repaint();
 				}
 			} else
 			{
+				// 白棋悔棋
 				whiteCount++;
+				// 最多悔3步棋
 				if (whiteCount > 3)
 				{
 					if (isSound == true)
 					{
 						new PlaySoundThread("warning.wav").start();
 					}
+
 					JOptionPane.showMessageDialog(null, "白棋已经悔了3步");
+
 				} else
 				{
+					// 悔棋
 					if (isSound == true)
 					{
 						new PlaySoundThread("move.wav").start();
 					}
+
+					// 移除最后一步走棋信息
 					v.remove(v.lastElement());
+					// 重绘
 					repaint();
 				}
 			}
