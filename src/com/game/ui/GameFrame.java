@@ -30,24 +30,24 @@ public class GameFrame extends KFrame
 	private JMenuItem backItem;
 	private JCheckBoxMenuItem soundItem;
 
-	// 所有的每一步走棋的信息
-	private Vector v = new Vector();
-	// 白方走棋信息
-	private Vector white = new Vector();
-	// 黑方走棋信息
-	private Vector black = new Vector();
+	// 所有棋子位置信息
+	private Vector<String> allChessPositionInfo = new Vector<String>();
+	// 白棋位置信息
+	private Vector<String> whiteChessPositionInfo = new Vector<String>();
+	// 黑棋位置信息
+	private Vector<String> blackChessPositionInfo = new Vector<String>();
 
-	// 用来判断白棋还是黑棋
-	private boolean b;
 	// 计算悔棋步数
-	private int whiteCount, blackCount;
-	// 间距大小
-	private int w = 25;
+	private int whiteBackStepCount, blackBackStepCount;
+	// 每个格子的边长
+	private final static int GRID_WIDTH = 25;
+	// 格子数量
+	private final static int GRID_NUM = 16;
 	// 棋盘的大小
 	private int px = 100, py = 100;
 
-	private int pxw = px + w, pyw = py + w;
-	private int width = w * 16, height = w * 16;
+	private int pxw = px + GRID_WIDTH, pyw = py + GRID_WIDTH;
+	private int width = GRID_WIDTH * GRID_NUM, height = GRID_WIDTH * GRID_NUM;
 	// 垂直线的长度
 	private int vline = width + px;
 	// 水平线的长度
@@ -132,30 +132,30 @@ public class GameFrame extends KFrame
 		g.clearRect(0, 0, this.getWidth(), this.getHeight());
 		// 绘制网格颜色
 		g.setColor(Color.BLACK);
-		// 绘制网格
+		// 绘制网格大边界
 		g.drawRect(px, py, width, height);
 		// 画提示信息
 		g.drawString("单机版五子棋小游戏，右击可以悔棋，欢迎来玩！", 180, 70);
-		g.drawString(v.size() + "步棋", 250, 550);
+		g.drawString(allChessPositionInfo.size() + "步棋", 250, 550);
 
 		// 绘制每条横线和竖线
 		for (int i = 0; i < 15; i++)
 		{
-			g.drawLine(pxw + i * w, py, pxw + i * w, hline);
-			g.drawLine(px, pyw + i * w, vline, pyw + i * w);
+			g.drawLine(pxw + i * GRID_WIDTH, py, pxw + i * GRID_WIDTH, hline);
+			g.drawLine(px, pyw + i * GRID_WIDTH, vline, pyw + i * GRID_WIDTH);
 		}
 
 		// 绘制棋子
-		for (int x = 0; x < v.size(); x++)
+		for (int x = 0; x < allChessPositionInfo.size(); x++)
 		{
-			String str = (String) v.get(x);
+			String str = (String) allChessPositionInfo.get(x);
 			String tmp[] = str.split("-");
 
 			int a = Integer.parseInt(tmp[0]);
 			int b = Integer.parseInt(tmp[1]);
 
-			a = a * w + px;
-			b = b * w + py;
+			a = a * GRID_WIDTH + px;
+			b = b * GRID_WIDTH + py;
 
 			if (x % 2 == 0)
 			{
@@ -166,7 +166,7 @@ public class GameFrame extends KFrame
 			}
 
 			// 绘制棋子
-			g.fillArc(a - w / 2, b - w / 2, w, w, 0, 360);
+			g.fillArc(a - GRID_WIDTH / 2, b - GRID_WIDTH / 2, GRID_WIDTH, GRID_WIDTH, 0, 360);
 		}
 
 	}
@@ -203,14 +203,14 @@ public class GameFrame extends KFrame
 	private void newGame()
 	{
 		// 清空所有走棋信息
-		v.clear();
-		black.clear();
-		white.clear();
+		allChessPositionInfo.clear();
+		blackChessPositionInfo.clear();
+		whiteChessPositionInfo.clear();
 		// 重绘
 		repaint();
 		// 悔棋次数清零
-		whiteCount = 0;
-		blackCount = 0;
+		whiteBackStepCount = 0;
+		blackBackStepCount = 0;
 	}
 
 	/**
@@ -227,7 +227,7 @@ public class GameFrame extends KFrame
 	private void back()
 	{
 		// 没有走棋信息
-		if (v.isEmpty())
+		if (allChessPositionInfo.isEmpty())
 		{
 			// 播放音效
 			if (isSound)
@@ -241,12 +241,12 @@ public class GameFrame extends KFrame
 		{
 			// 有走棋信息
 			// 判断是白棋悔棋，还是黑棋悔棋
-			if (v.size() % 2 == 0)
+			if (allChessPositionInfo.size() % 2 == 0)
 			{
 				// 黑棋悔棋
-				blackCount++;
+				blackBackStepCount++;
 				// 最多悔3步棋
-				if (blackCount > 3)
+				if (blackBackStepCount > 3)
 				{
 					if (isSound)
 					{
@@ -264,16 +264,16 @@ public class GameFrame extends KFrame
 					}
 
 					// 移除最后一步走棋信息
-					v.remove(v.lastElement());
+					allChessPositionInfo.remove(allChessPositionInfo.lastElement());
 					// 重绘
 					repaint();
 				}
 			} else
 			{
 				// 白棋悔棋
-				whiteCount++;
+				whiteBackStepCount++;
 				// 最多悔3步棋
-				if (whiteCount > 3)
+				if (whiteBackStepCount > 3)
 				{
 					if (isSound == true)
 					{
@@ -291,7 +291,7 @@ public class GameFrame extends KFrame
 					}
 
 					// 移除最后一步走棋信息
-					v.remove(v.lastElement());
+					allChessPositionInfo.remove(allChessPositionInfo.lastElement());
 					// 重绘
 					repaint();
 				}
@@ -415,7 +415,7 @@ public class GameFrame extends KFrame
 			}
 
 			// 判断是黑棋赢，还是白棋赢
-			if (v.size() % 2 == 0)
+			if (allChessPositionInfo.size() % 2 == 0)
 			{
 				JOptionPane.showMessageDialog(this, "黑棋赢了");
 			} else
@@ -440,18 +440,18 @@ public class GameFrame extends KFrame
 			int x = e.getX();
 			int y = e.getY();
 			// 计算精确位置
-			x = (x - x % w) + ((x % w) > (w / 2) ? w : 0);
-			y = (y - y % w) + ((y % w > (w / 2) ? w : 0));
+			x = (x - x % GRID_WIDTH) + ((x % GRID_WIDTH) > (GRID_WIDTH / 2) ? GRID_WIDTH : 0);
+			y = (y - y % GRID_WIDTH) + ((y % GRID_WIDTH > (GRID_WIDTH / 2) ? GRID_WIDTH : 0));
 
-			x = (x - px) / w;
-			y = (y - py) / w;
+			x = (x - px) / GRID_WIDTH;
+			y = (y - py) / GRID_WIDTH;
 
 			// 判断棋子是否出界
 			if ((x >= 0) && (y >= 0) && (x <= 16) && (y <= 16))
 			{
 				// 没有出界
 				// 判断该位置是否已经有棋子
-				if (v.contains(x + "-" + y))
+				if (allChessPositionInfo.contains(x + "-" + y))
 				{
 					// 该位置已经有棋
 					if (isSound)
@@ -468,19 +468,19 @@ public class GameFrame extends KFrame
 					}
 
 					// 添加走棋信息(棋子位置信息)
-					v.add(x + "-" + y);
+					allChessPositionInfo.add(x + "-" + y);
 					// 重绘
 					this.repaint();
 
 					// 判断黑白棋
-					if (v.size() % 2 == 0)
+					if (allChessPositionInfo.size() % 2 == 0)
 					{
-						black.add(x + "-" + y);
-						checkVictory(x, y, black);
+						blackChessPositionInfo.add(x + "-" + y);
+						checkVictory(x, y, blackChessPositionInfo);
 					} else
 					{
-						white.add(x + "-" + y);
-						checkVictory(x, y, white);
+						whiteChessPositionInfo.add(x + "-" + y);
+						checkVictory(x, y, whiteChessPositionInfo);
 					}
 
 				}
