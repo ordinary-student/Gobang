@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
 import java.util.Vector;
 
 import javax.swing.JCheckBoxMenuItem;
@@ -297,6 +298,246 @@ public class GameFrame extends KFrame
 			}
 		}
 
+	}
+
+	/**
+	 * 判断胜利的方法
+	 * 
+	 * @param x
+	 * @param y
+	 * @param chessPositionInfo
+	 */
+	private void checkVictory(int x, int y, Vector chessPositionInfo)
+	{
+		// 垂直方向棋子数量
+		int verticalCount = 0;
+		// 水平方向棋子数量
+		int horizontalCount = 0;
+		// 斜线方向棋子数量1
+		int diagonalCount = 0;
+		// 斜线方向棋子数量2
+		int antiDiagonalCount = 0;
+
+		// 计算水平方向棋子数量
+		for (int i = 1; i < 5; i++)
+		{
+			if (chessPositionInfo.contains((x + i) + "-" + y))
+			{
+				horizontalCount++;
+			} else
+			{
+				break;
+			}
+		}
+		for (int i = 1; i < 5; i++)
+		{
+			if (chessPositionInfo.contains((x - i) + "-" + y))
+			{
+				horizontalCount++;
+			} else
+			{
+				break;
+			}
+		}
+
+		// 计算垂直方向棋子数量
+		for (int i = 1; i < 5; i++)
+		{
+			if (chessPositionInfo.contains(x + "-" + (y + i)))
+			{
+				verticalCount++;
+			} else
+			{
+				break;
+			}
+		}
+		for (int i = 1; i < 5; i++)
+		{
+			if (chessPositionInfo.contains(x + "-" + (y - i)))
+			{
+				verticalCount++;
+			} else
+			{
+				break;
+			}
+		}
+
+		// 计算45°斜线方向棋子数量
+		for (int i = 1; i < 5; i++)
+		{
+			if (chessPositionInfo.contains((x + i) + "-" + (y + i)))
+			{
+				diagonalCount++;
+			} else
+			{
+				break;
+			}
+		}
+		for (int i = 1; i < 5; i++)
+		{
+			if (chessPositionInfo.contains((x - i) + "-" + (y - i)))
+			{
+				diagonalCount++;
+			} else
+			{
+				break;
+			}
+		}
+
+		// 计算135°斜线方向棋子数量
+		for (int i = 1; i < 5; i++)
+		{
+			if (chessPositionInfo.contains((x + i) + "-" + (y - i)))
+			{
+				antiDiagonalCount++;
+			} else
+			{
+				break;
+			}
+		}
+		for (int i = 1; i < 5; i++)
+		{
+			if (chessPositionInfo.contains((x - i) + "-" + (y + i)))
+			{
+				antiDiagonalCount++;
+			} else
+			{
+				break;
+			}
+		}
+
+		// 判断是否赢了
+		if ((horizontalCount >= 4) || (verticalCount >= 4) || (diagonalCount >= 4) || (antiDiagonalCount >= 4))
+		{
+			if (isSound)
+			{
+				new PlaySoundThread("win.wav").start();
+			}
+
+			// 判断是黑棋赢，还是白棋赢
+			if (v.size() % 2 == 0)
+			{
+				JOptionPane.showMessageDialog(this, "黑棋赢了");
+			} else
+			{
+				JOptionPane.showMessageDialog(this, "白棋赢了");
+			}
+
+			// 新游戏
+			newGame();
+		}
+	}
+
+	// 鼠标点击事件
+	@Override
+	public void mouseClicked(MouseEvent e)
+	{
+		// 判断来源
+		if (e.getButton() == e.BUTTON1)
+		{
+			int x = e.getX();
+			int y = e.getY();
+			x = (x - x % w) + (x % w > w / 2 ? w : 0);
+			y = (y - y % w) + (y % w > w / 2 ? w : 0);
+			x = (x - px) / w;
+			y = (y - py) / w;
+
+			if (x >= 0 && y >= 0 && x <= 16 && y <= 16)
+			{
+				if (v.contains(x + "-" + y))
+				{
+					if (isSound == true)
+					{
+						new PlaySoundThread("warning.wav").start();
+					}
+					// JOptionPane.showMessageDialog(this, "该位置已经有棋了！");
+					// System.out.println("已经有棋了！");
+				} else
+				{
+
+					if (isSound == true)
+					{
+						new PlaySoundThread("merge.wav").start();
+					}
+					v.add(x + "-" + y);
+					this.repaint();
+					if (v.size() % 2 == 0)
+					{
+						black.add(x + "-" + y);
+						checkVictory(x, y, black);
+						// System.out.println("黑棋");
+					} else
+					{
+						white.add(x + "-" + y);
+						checkVictory(x, y, white);
+						// System.out.println("白棋");
+					}
+					// System.out.println(e.getX()+"-"+e.getY());
+				}
+			} else
+			{
+				if (isSound == true)
+				{
+					new PlaySoundThread("warning.wav").start();
+				}
+				// System.out.println(e.getX()+"-"+e.getY()+"|"+x+"-"+y+"\t超出边界了");
+			}
+		}
+
+		if (e.getButton() == e.BUTTON3)
+		{
+			// 右击悔棋的方法
+			// System.out.println("鼠标右击--悔棋");
+			if (v.isEmpty())
+			{
+				if (isSound == true)
+				{
+					new PlaySoundThread("warning.wav").start();
+				}
+				JOptionPane.showMessageDialog(this, "没有棋可悔");
+			} else
+			{
+				if (v.size() % 2 == 0)
+				{ // 判断是白棋悔棋，还是黑棋悔棋
+					blackCount++;
+					if (blackCount > 3)
+					{
+						if (isSound == true)
+						{
+							new PlaySoundThread("warning.wav").start();
+						}
+						JOptionPane.showMessageDialog(this, "黑棋已经悔了3步");
+					} else
+					{
+						if (isSound == true)
+						{
+							new PlaySoundThread("move.wav").start();
+						}
+						v.remove(v.lastElement());
+						this.repaint();
+					}
+				} else
+				{
+					whiteCount++;
+					if (whiteCount > 3)
+					{
+						if (isSound == true)
+						{
+							new PlaySoundThread("warning.wav").start();
+						}
+						JOptionPane.showMessageDialog(this, "白棋已经悔了3步");
+					} else
+					{
+						if (isSound == true)
+						{
+							new PlaySoundThread("move.wav").start();
+						}
+						v.remove(v.lastElement());
+						this.repaint();
+					}
+				}
+			}
+		}
 	}
 
 }
