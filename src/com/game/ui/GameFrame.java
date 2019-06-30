@@ -10,7 +10,9 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
+import com.game.thread.PlaySoundThread;
 import com.game.utils.WindowUtil;
 
 /**
@@ -181,7 +183,55 @@ public class GameFrame extends KFrame
 
 	private void back()
 	{
-		// TODO 自动生成的方法存根
+		if (v.isEmpty())
+		{
+			if (isSound)
+			{
+				new PlaySoundThread("warning.wav").start();
+			}
+			JOptionPane.showMessageDialog(null, "没有棋可悔");
+		} else
+		{
+			if (v.size() % 2 == 0)
+			{ // 判断是白棋悔棋，还是黑棋悔棋
+				blackCount++;
+				if (blackCount > 3)
+				{
+					if (isSound == true)
+					{
+						new PlaySoundThread("warning.wav").start();
+					}
+					JOptionPane.showMessageDialog(null, "黑棋已经悔了3步");
+				} else
+				{
+					if (isSound == true)
+					{
+						new PlaySoundThread("move.wav").start();
+					}
+					v.remove(v.lastElement());
+					repaint();
+				}
+			} else
+			{
+				whiteCount++;
+				if (whiteCount > 3)
+				{
+					if (isSound == true)
+					{
+						new PlaySoundThread("warning.wav").start();
+					}
+					JOptionPane.showMessageDialog(null, "白棋已经悔了3步");
+				} else
+				{
+					if (isSound == true)
+					{
+						new PlaySoundThread("move.wav").start();
+					}
+					v.remove(v.lastElement());
+					repaint();
+				}
+			}
+		}
 
 	}
 
